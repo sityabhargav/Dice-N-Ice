@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "A coffee order placed by a customer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique order ID (e.g. DNI-123)" },
+        "name": { "type": "string", "description": "Customer name" },
+        "phone": { "type": "string", "description": "Customer WhatsApp number" },
+        "note": { "type": "string", "description": "Special instructions" },
+        "payMethod": { "type": "string", "enum": ["counter", "upi"], "description": "Payment method" },
+        "utr": { "type": "string", "description": "UPI Transaction Reference" },
+        "total": { "type": "number", "description": "Total order amount" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "preparing", "ready", "done"], "description": "Current status of the order" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "emoji": { "type": "string" },
+              "qty": { "type": "number" },
+              "price": { "type": "number" },
+              "flv": { "type": "string" }
+            }
+          }
+        },
+        "date": { "type": "string", "description": "Order date (DD/MM/YYYY)" },
+        "time": { "type": "string", "description": "Order time (HH:MM)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Firestore server timestamp when order was created" }
+      },
+      "required": ["id", "name", "phone", "total", "status", "items", "createdAt", "date", "time"]
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Collection of coffee orders"
+    }
+  }
+}

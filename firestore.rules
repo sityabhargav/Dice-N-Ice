@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: orders
+    // Document ID: {orderId}
+    // Fields:
+    //   - id: string (required) - Unique order ID
+    //   - name: string (required) - Customer name
+    //   - phone: string (required) - Customer phone
+    //   - note: string (optional) - Special instructions
+    //   - payMethod: string (required, 'counter' | 'upi')
+    //   - utr: string (optional) - UPI Transaction Reference
+    //   - total: number (required, positive)
+    //   - status: string (required, 'pending' | 'confirmed' | 'preparing' | 'ready' | 'done')
+    //   - items: list (required) - Array of item objects
+    //   - date: string (required)
+    //   - time: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "sityabhargav@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isRecent(timestamp) {
+      return timestamp > request.time - duration.value(5, 'm') &&
+             timestamp <= request.time;
+    }
+
+    function hasOnlyAllowedFields(data, allowedFields) {
+      return data.keys().hasOnly(allowedFields);
+    }
+
+    function isValidOrder(data) {
+      let allowedFields = ['id', 'name', 'phone', 'total', 'status', 'items', 'createdAt', 'date', 'time', 'note', 'payMethod', 'utr'];
+      return data.keys().hasAll(['id', 'name', 'phone', 'total', 'status', 'items', 'createdAt', 'date', 'time']) &&
+             hasOnlyAllowedFields(data, allowedFields) &&
+             data.id is string && data.id.size() >= 3 && data.id.size() <= 10 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 50 &&
+             data.phone is string && data.phone.matches('^[0-9]{10}
+  }
+}
+) &&
+             data.total is number && data.total >= 0 &&
+             data.status in ['pending', 'confirmed', 'preparing', 'ready', 'done'] &&
+             data.items is list && data.items.size() > 0 && data.items.size() <= 20 &&
+             data.createdAt is timestamp && isRecent(data.createdAt) &&
+             data.date is string && data.time is string &&
+             (!('note' in data) || (data.note is string && data.note.size() <= 200)) &&
+             (!('payMethod' in data) || (data.payMethod in ['counter', 'upi'])) &&
+             (!('utr' in data) || (data.utr is string && data.utr.size() <= 50));
+    }
+
+    match /orders/{orderId} {
+      // Public can create orders
+      allow create: if isValidOrder(request.resource.data);
+      
+      // Only admin (owner) can read all orders and update status
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin() && isValidOrder(request.resource.data);
+    }
+  }
+}

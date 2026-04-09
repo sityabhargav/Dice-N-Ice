@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=Caveat:wght@500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Oswald", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-handwriting: "Caveat", cursive;
+
+  --color-espresso: #1C0D04;
+  --color-brown: #2C1A0E;
+  --color-brown-light: #3D2410;
+  --color-mocha: #5A3420;
+  --color-tan: #8B6030;
+  --color-gold: #C49A3C;
+  --color-cream: #F5ECD7;
+  --color-cream-dark: #EDE0C4;
+  --color-cream-darker: #D9C9A8;
+  --color-rust: #B8420A;
+  --color-orange: #D4621A;
+  --color-orange-light: #E8732A;
+  --color-green: #1A6035;
+  --color-muted: #8B7055;
+  --color-card: #FBF5E8;
+}
+
+@layer base {
+  body {
+    @apply bg-espresso text-cream font-sans;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3C/rect%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.04;
+  }
+}
+
+@media print {
+  body {
+    max-width: none;
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

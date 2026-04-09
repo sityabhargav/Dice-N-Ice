@@ -1,0 +1,6 @@
+{
+  "name": "Dice N' Ice — Cold Coffee",
+  "description": "Official website for Dice N' Ice coffee stall at Fleatopia. Order cold coffee, roll the dice for free toppings, and view our printable menu. Now with real-time order tracking and owner dashboard powered by Firebase.",
+  "requestFramePermissions": [],
+  "Overwrite": true
+}
